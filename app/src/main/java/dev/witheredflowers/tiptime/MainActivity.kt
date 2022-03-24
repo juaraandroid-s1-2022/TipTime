@@ -26,7 +26,19 @@ class MainActivity : AppCompatActivity() {
 	fun calculateTip() {
 		// Mengambil value dari EditText
 		val stringInTextField = binding.costOfService.text.toString()
-		val cost = stringInTextField.toDouble()
+		
+		// Karena bisa saja text ini kosong, jadi harus mengganti fungsi
+		// dari toDouble menjadi toDoubleOrNull
+		val cost = stringInTextField.toDoubleOrNull()
+		
+		// Mengurus logika ketika mendapatkan cost adalah null
+		if (cost == null) {
+			// Set text dari tipResult jadi kosong
+			binding.tipResult.text = ""
+			
+			// keluar dari fungsi (logika di bawah tidak akan dijalankan)
+			return
+		}
 		
 		// Mengambil value dari radio button yang terpilih
 		val selectedId = binding.tipOptions.checkedRadioButtonId
