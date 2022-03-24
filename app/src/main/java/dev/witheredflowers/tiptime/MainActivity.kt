@@ -3,6 +3,7 @@ package dev.witheredflowers.tiptime
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import dev.witheredflowers.tiptime.databinding.ActivityMainBinding
+import java.text.NumberFormat
 
 class MainActivity : AppCompatActivity() {
 	
@@ -15,6 +16,11 @@ class MainActivity : AppCompatActivity() {
 		// setContentView(R.layout.activity_main)
 		binding = ActivityMainBinding.inflate(layoutInflater)
 		setContentView(binding.root)
+		
+		// Set on click listener pada button
+		binding.calculateButton.setOnClickListener {
+			calculateTip()
+		}
 	}
 	
 	fun calculateTip() {
@@ -26,7 +32,7 @@ class MainActivity : AppCompatActivity() {
 		val selectedId = binding.tipOptions.checkedRadioButtonId
 		
 		// Menghitung persentase tip
-		val tipPercentage = when(selectedId) {
+		val tipPercentage = when (selectedId) {
 			R.id.option_twenty_percent -> 0.20
 			R.id.option_eighteen_percent -> 0.18
 			else -> 0.15
@@ -39,9 +45,15 @@ class MainActivity : AppCompatActivity() {
 		val roundUp = binding.roundUpSwitch.isChecked
 		
 		// apabila true (ada pembulatan)
-		if(roundUp) {
+		if (roundUp) {
 			// logika pembulatan
 			tip = kotlin.math.ceil(tip)
 		}
+		
+		// Memunculkan format mata uang di tip
+		val formattedTip = NumberFormat.getCurrencyInstance().format(tip)
+		
+		// Setel TextView tipResult dengan text tambahan formattedTip
+		binding.tipResult.text = getString(R.string.tip_amount, formattedTip)
 	}
 }
