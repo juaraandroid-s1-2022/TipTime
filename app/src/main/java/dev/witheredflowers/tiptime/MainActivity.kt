@@ -9,7 +9,7 @@ class MainActivity : AppCompatActivity() {
 	
 	// lateinit adalah perjanjian bahwa kode kita akan menginisialisasi variabel sebelum digunakan
 	// kalau tidak atau lupa diinisialisasi maka aplikasi akan crash
-	lateinit var binding: ActivityMainBinding
+	private lateinit var binding: ActivityMainBinding
 	
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -23,7 +23,9 @@ class MainActivity : AppCompatActivity() {
 		}
 	}
 	
-	fun calculateTip() {
+	// adopsi praktik yang bagus
+	// fungsi ini cukup hanya untuk diakses di MainActivity saja
+	private fun calculateTip() {
 		// Mengambil value dari EditText
 		val stringInTextField = binding.costOfService.text.toString()
 		
@@ -32,19 +34,22 @@ class MainActivity : AppCompatActivity() {
 		val cost = stringInTextField.toDoubleOrNull()
 		
 		// Mengurus logika ketika mendapatkan cost adalah null
-		if (cost == null) {
+		if (cost == null || cost == 0.0) {
 			// Set text dari tipResult jadi kosong
-			binding.tipResult.text = ""
+			// binding.tipResult.text = ""
+			
+			//	Jadi sekarang kita akan memanggil displayTip saja
+			displayTip(0.0)
 			
 			// keluar dari fungsi (logika di bawah tidak akan dijalankan)
 			return
 		}
 		
 		// Mengambil value dari radio button yang terpilih
-		val selectedId = binding.tipOptions.checkedRadioButtonId
+		// val selectedId = binding.tipOptions.checkedRadioButtonId
 		
 		// Menghitung persentase tip
-		val tipPercentage = when (selectedId) {
+		val tipPercentage = when (binding.tipOptions.checkedRadioButtonId) {
 			R.id.option_twenty_percent -> 0.20
 			R.id.option_eighteen_percent -> 0.18
 			else -> 0.15
@@ -54,14 +59,22 @@ class MainActivity : AppCompatActivity() {
 		var tip = tipPercentage * cost
 		
 		// Mengambil value dari toggle (switch) apakah ada pembulatan (true atau false)
-		val roundUp = binding.roundUpSwitch.isChecked
+		// val roundUp = binding.roundUpSwitch.isChecked
 		
 		// apabila true (ada pembulatan)
-		if (roundUp) {
+		if (binding.roundUpSwitch.isChecked) {
 			// logika pembulatan
 			tip = kotlin.math.ceil(tip)
 		}
 		
+		// memanggil fungsi displayTip
+		displayTip(tip)
+	}
+	
+	// pindahkan isi dari formattedTip dan set textnya menjadi sebuah fungsi
+	// supaya kode bisa DRY (karena nantinya akan digunakan kembali di sini)
+	// DRY = Don't Repeat Yourself
+	private fun displayTip(tip: Double) {
 		// Memunculkan format mata uang di tip
 		val formattedTip = NumberFormat.getCurrencyInstance().format(tip)
 		
